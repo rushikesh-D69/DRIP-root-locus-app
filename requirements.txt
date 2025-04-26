@@ -1,0 +1,11 @@
+
+---
+
+### 📄 requirements.txt
+
+```text
+streamlit
+numpy
+matplotlib
+control
+pandas
