@@ -79,8 +79,17 @@ See the [LICENSE](LICENSE) file for more information.
 
 ---
 
-## Author
+## Authors
 
-**D. Rushikesh**  
-ECE, Communication Systems Track  
-Developer and Creator of DRIP
+- **D. Rushikesh**  
+  Lead Developer and System Designer  
+  ECE Department
+
+- **Chandan Sai Pavan**  
+  Backend Integration and Stability Analysis Specialist  
+  ECE Department
+
+- **Deepak Yadav K**  
+  Output Validation and Mathematical Accuracy Verifier  
+  ECE Department
+
