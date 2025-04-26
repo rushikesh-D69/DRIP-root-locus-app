@@ -5,6 +5,96 @@ from control import tf, rlocus, feedback, step_response
 import pandas as pd
 from matplotlib.patches import Circle
 
+def display_angle_of_departure(poles, zeros):
+    complex_poles = [p for p in poles if np.abs(p.imag) > 1e-8]
+    if not complex_poles:
+        st.info("$G(s)H(s)$ has no complex poles, so there are no angles of departure.")
+        return
+    for idx, p in enumerate(complex_poles):
+        st.markdown(f"#### For pole at $s = {np.round(p.real, 2)} {'+' if p.imag >= 0 else '-'} {abs(np.round(p.imag, 2))}j$:")
+        angle_to_zeros = []
+        angle_to_poles = []
+        # Zeros
+        for z in zeros:
+            vec = p - z
+            angle = np.angle(vec, deg=True)
+            angle_to_zeros.append(angle)
+            st.markdown(
+                f"- **zero at $"
+                f"{np.round(z.real,2)}{'+' if z.imag >= 0 else '-'}{abs(np.round(z.imag,2))}j"
+                f"$**: the departing pole, at $({np.round(p.real,2)}{'+' if p.imag >= 0 else '-'}{abs(np.round(p.imag,2))}j)$, "
+                f"minus this zero, $({np.round(z.real,2)}{'+' if z.imag >= 0 else '-'}{abs(np.round(z.imag,2))}j)$, "
+                f"is equal to $({np.round(vec.real,2)}{'+' if vec.imag >= 0 else '-'}{abs(np.round(vec.imag,2))}j)$.  \n"
+                f"The angle between them is $\\angle({np.round(vec.real,2)}{'+' if vec.imag >= 0 else '-'}{abs(np.round(vec.imag,2))}j) = {angle:.0f}^\\circ$."
+            )
+        # Other Poles
+        for j, p2 in enumerate(poles):
+            if not np.allclose(p, p2):
+                vec = p - p2
+                angle = np.angle(vec, deg=True)
+                angle_to_poles.append(angle)
+                st.markdown(
+                    f"- **pole at $"
+                    f"{np.round(p2.real,2)}{'+' if p2.imag >= 0 else '-'}{abs(np.round(p2.imag,2))}j"
+                    f"$**: the departing pole, at $({np.round(p.real,2)}{'+' if p.imag >= 0 else '-'}{abs(np.round(p.imag,2))}j)$, "
+                    f"minus this pole, $({np.round(p2.real,2)}{'+' if p2.imag >= 0 else '-'}{abs(np.round(p2.imag,2))}j)$, "
+                    f"is equal to $({np.round(vec.real,2)}{'+' if vec.imag >= 0 else '-'}{abs(np.round(vec.imag,2))}j)$.  \n"
+                    f"The angle between them is $\\angle({np.round(vec.real,2)}{'+' if vec.imag >= 0 else '-'}{abs(np.round(vec.imag,2))}j) = {angle:.0f}^\\circ$."
+                )
+        # Calculate angle of departure
+        angle_departure = 180 + sum(angle_to_zeros) - sum(angle_to_poles)
+        st.markdown(
+            f"\nThe angle of departure from the pole at $({np.round(p.real,2)}{'+' if p.imag >= 0 else '-'}{abs(np.round(p.imag,2))}j)$ is  \n"
+            r"\["
+            f"180^\\circ + \\sum(\\text{{angles to zeros}}) - \\sum(\\text{{angles to poles}}) = {angle_departure:.1f}^\\circ"
+            r"\]"
+        )
+
+def display_angle_of_arrival(poles, zeros):
+    complex_zeros = [z for z in zeros if np.abs(z.imag) > 1e-8]
+    if not complex_zeros:
+        st.info("$G(s)H(s)$ has no complex zeros, so there are no angles of arrival.")
+        return
+    for idx, z in enumerate(complex_zeros):
+        st.markdown(f"#### For zero at $s = {np.round(z.real, 2)} {'+' if z.imag >= 0 else '-'} {abs(np.round(z.imag, 2))}j$:")
+        angle_to_zeros = []
+        angle_to_poles = []
+        # Poles
+        for p in poles:
+            vec = z - p
+            angle = np.angle(vec, deg=True)
+            angle_to_poles.append(angle)
+            st.markdown(
+                f"- **pole at $"
+                f"{np.round(p.real,2)}{'+' if p.imag >= 0 else '-'}{abs(np.round(p.imag,2))}j"
+                f"$**: the arriving zero, at $({np.round(z.real,2)}{'+' if z.imag >= 0 else '-'}{abs(np.round(z.imag,2))}j)$, "
+                f"minus this pole, $({np.round(p.real,2)}{'+' if p.imag >= 0 else '-'}{abs(np.round(p.imag,2))}j)$, "
+                f"is equal to $({np.round(vec.real,2)}{'+' if vec.imag >= 0 else '-'}{abs(np.round(vec.imag,2))}j)$.  \n"
+                f"The angle between them is $\\angle({np.round(vec.real,2)}{'+' if vec.imag >= 0 else '-'}{abs(np.round(vec.imag,2))}j) = {angle:.1f}^\\circ$."
+            )
+        # Other Zeros
+        for j, z2 in enumerate(zeros):
+            if not np.allclose(z, z2):
+                vec = z - z2
+                angle = np.angle(vec, deg=True)
+                angle_to_zeros.append(angle)
+                st.markdown(
+                    f"- **zero at $"
+                    f"{np.round(z2.real,2)}{'+' if z2.imag >= 0 else '-'}{abs(np.round(z2.imag,2))}j"
+                    f"$**: the arriving zero, at $({np.round(z.real,2)}{'+' if z.imag >= 0 else '-'}{abs(np.round(z.imag,2))}j)$, "
+                    f"minus this zero, $({np.round(z2.real,2)}{'+' if z2.imag >= 0 else '-'}{abs(np.round(z2.imag,2))}j)$, "
+                    f"is equal to $({np.round(vec.real,2)}{'+' if vec.imag >= 0 else '-'}{abs(np.round(vec.imag,2))}j)$.  \n"
+                    f"The angle between them is $\\angle({np.round(vec.real,2)}{'+' if vec.imag >= 0 else '-'}{abs(np.round(vec.imag,2))}j) = {angle:.1f}^\\circ$."
+                )
+        # Calculate angle of arrival
+        angle_arrival = 180 - sum(angle_to_zeros) + sum(angle_to_poles)
+        st.markdown(
+            f"\nThe angle of arrival from the zero at $({np.round(z.real,2)}{'+' if z.imag >= 0 else '-'}{abs(np.round(z.imag,2))}j)$ is  \n"
+            r"\["
+            f"180^\\circ - \\sum(\\text{{angles to zeros}}) + \\sum(\\text{{angles to poles}}) = {angle_arrival:.1f}^\\circ"
+            r"\]"
+        )
+
 # Configure the page
 st.set_page_config(
     page_title="DRIP – Dynamic Root Locus Integration Platform",
@@ -556,29 +646,13 @@ with root_tab:
         if selected_rule == "Angle of Departure from complex poles":
             st.markdown("""
             <h3 style='color:#b00;'>Angle of Departure</h3>
-            <span style='color:#b00; font-size:0.95em;'><i>Link to in depth description of rule for finding angle of departure from complex poles of G(s)H(s).</i></span>
-            <br><br>
-            We will find the angle of departure of the locus from each complex pole (marked by a pink diamond).<br>
-            Angles between this pole and other poles are shown as blue/purple arcs.<br>
-            Angles between this pole and zeros are shown as green/cyan arcs.<br>
-            The angle of departure is shown as a pink arc.
             """, unsafe_allow_html=True)
-            # For each complex pole, show the calculation
-            for idx, p in enumerate(poles):
-                if abs(p.imag) > 1e-8:
-                    st.markdown(f"<b>For pole at $s = {np.round(p.real,2)} {'+' if p.imag >= 0 else '-'} {abs(np.round(p.imag,2))}j$:</b>", unsafe_allow_html=True)
-                    # Angles to zeros
-                    for j, z in enumerate(zeros):
-                        vec = p - z
-                        angle = np.angle(vec, deg=True)
-                        st.markdown(f"<ul><li><b>zero at {np.round(z.real,2)}{'+' if z.imag >= 0 else '-'}{abs(np.round(z.imag,2))}j</b>: vector = $({np.round(vec.real,2)} {'+' if vec.imag >= 0 else '-'} {abs(np.round(vec.imag,2))}j)$, angle $= {angle:.2f}^\circ$</li></ul>", unsafe_allow_html=True)
-                    # Angles to other poles
-                    for j, p2 in enumerate(poles):
-                        if not np.allclose(p, p2):
-                            vec = p - p2
-                            angle = np.angle(vec, deg=True)
-                            st.markdown(f"<ul><li><b>pole at {np.round(p2.real,2)}{'+' if p2.imag >= 0 else '-'}{abs(np.round(p2.imag,2))}j</b>: vector = $({np.round(vec.real,2)} {'+' if vec.imag >= 0 else '-'} {abs(np.round(vec.imag,2))}j)$, angle $= {angle:.2f}^\circ$</li></ul>", unsafe_allow_html=True)
-            st.markdown("The angle of departure is shown as a pink arc on the plot.")
+            display_angle_of_departure(poles, zeros)
+        elif selected_rule == "Angle of Arrival to complex zeros":
+            st.markdown("""
+            <h3 style='color:#b00;'>Angle of Arrival</h3>
+            """, unsafe_allow_html=True)
+            display_angle_of_arrival(poles, zeros)
         elif explanation.startswith("\\begin{align*}"):
             st.latex(explanation)
         else:
