@@ -86,7 +86,7 @@ See the [LICENSE](LICENSE) file for more information.
   ECE Department
 
 - **Chandan Sai Pavan**  
-  Team Manager and Stability Analysis Specialist 
+  Team Manager and Stability Analysis Specialist
   ECE Department
 
 - **Deepak Yadav K**  
@@ -94,6 +94,6 @@ See the [LICENSE](LICENSE) file for more information.
   ECE Department
 
 - **K Harsha Vardhanu**  
-  System Integration and Output Validation Specialist  
+  Output Validation Specialist and System Integration    
   ECE Department
 
