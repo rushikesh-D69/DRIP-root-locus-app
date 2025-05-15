@@ -85,16 +85,4 @@ See the [LICENSE](LICENSE) file for more information.
   Lead Developer and System Designer  
   ECE Department
 
-- **Chandan Sai Pavan**  
-  Team Manager and Stability Analysis Specialist
-  ECE Department
-  
-
-- **Deepak Yadav K**  
-  Output Validation and Mathematical Accuracy Verifier  
-  ECE Department
-
-- **K Harsha Vardhanu**  
-  Output Validation Specialist and System Integration    
-  ECE Department
 
